@@ -1,0 +1,76 @@
+##############################################################################
+# Common CMake settings for all JCuda projects
+#
+
+set(JCUDA_CUDA_VERSION 7.0)
+
+
+
+##############################################################################
+# Set the CMake module path so that FindCUDA.cmake can be found
+
+set(CMAKE_MODULE_PATH 
+  "${CMAKE_CURRENT_LIST_DIR}/CMake"
+  ${CMAKE_MODULE_PATH})
+
+
+
+##############################################################################
+# Find the required packages
+
+if (NOT CUDA_FOUND)
+    find_package(CUDA ${JCUDA_CUDA_VERSION} REQUIRED)
+endif()
+
+if (NOT JNI_FOUND)
+    find_package(JNI REQUIRED)
+endif()
+
+
+
+##############################################################################
+# Define the common JNI include directories
+    
+set(JCudaCommonJNI_INCLUDE_DIRS 
+    ${CMAKE_CURRENT_LIST_DIR}/JCudaCommonJNI/src)
+
+
+##############################################################################
+# Set the output directories for the built libraries
+
+set (CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
+set (CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
+set (CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
+
+
+
+##############################################################################
+# Overriding the CMake flags to use static runtime libraries
+# See http://www.cmake.org/Wiki/CMake_FAQ#
+#     How_can_I_build_my_MSVC_application_with_a_static_runtime.3F
+set(CMAKE_USER_MAKE_RULES_OVERRIDE
+   ${CMAKE_CURRENT_SOURCE_DIR}/CMake_c_flag_overrides.cmake)
+set(CMAKE_USER_MAKE_RULES_OVERRIDE_CXX
+   ${CMAKE_CURRENT_SOURCE_DIR}/CMake_cxx_flag_overrides.cmake)
+
+
+
+##############################################################################
+# Determine the host system, and set the CMAKE_HOST and CMAKE_ARCH variables. 
+# These will be used by the individual library CMake files to build the 
+# final library name, e.g. "jcuda-windows-x86_64.dll"
+
+if(CMAKE_HOST_WIN32)
+  set(CMAKE_HOST "windows")
+elseif(CMAKE_HOST_APPLE)
+  set(CMAKE_HOST "apple")
+  set(CMAKE_SKIP_RPATH FALSE)
+elseif(CMAKE_HOST_UNIX)
+  set(CMAKE_HOST "linux")
+endif()
+
+if(CMAKE_SIZEOF_VOID_P EQUAL 8)
+  set(CMAKE_ARCH "x86_64")
+else()
+  set(CMAKE_ARCH "x86")
+endif()
