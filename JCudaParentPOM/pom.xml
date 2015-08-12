@@ -35,6 +35,20 @@
     <build>
         <plugins>
 
+            <!--
+              Configure the maven-surefire-plugin to run the unit tests
+              with a Java library path that points to the default CMake
+              output directory of the native libraries
+            -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>2.18.1</version>
+                <configuration>
+                    <argLine>-Djava.library.path=${project.basedir}/../../nativeLibraries/</argLine>
+                </configuration>
+            </plugin>
+
             <plugin>
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>2.3.2</version>
@@ -76,33 +90,6 @@
                     </execution>
                 </executions>
             </plugin>
-
-
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-dependency-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <id>copy-artifact</id>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>copy</goal>
-                        </goals>
-                        <configuration>
-                            <artifactItems>
-                                <artifactItem>
-                                    <groupId>${project.groupId}</groupId>
-                                    <artifactId>${project.artifactId}</artifactId>
-                                    <version>${project.version}</version>
-                                    <type>${project.packaging}</type>
-                                </artifactItem>
-                            </artifactItems>
-                            <outputDirectory>../../jcuda-main/target</outputDirectory>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-
 
         </plugins>
     </build>

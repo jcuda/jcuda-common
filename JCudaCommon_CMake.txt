@@ -36,11 +36,24 @@ set(JCudaCommonJNI_INCLUDE_DIRS
 
 
 ##############################################################################
-# Set the output directories for the built libraries
+# Set the output directories for the built libraries: The runtime libraties
+# (e.g. the DLLs) will be placed into a sibling directory of the source 
+# directory, called "nativeLibraries". This will be done generally (for
+# single-configuration compilers), and for all configurations (e.g. RELEASE 
+# and MINSIZEREL) for multi-configuration compilers like MSVC). 
 
-set (CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
-set (CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
-set (CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/../nativeLibraries)
+set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
+set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
+foreach(CONFIGURATION_TYPE ${CMAKE_CONFIGURATION_TYPES})
+    string(TOUPPER ${CONFIGURATION_TYPE} CONFIGURATION_TYPE)
+    set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_${CONFIGURATION_TYPE} 
+        ${CMAKE_SOURCE_DIR}/../nativeLibraries)
+    set(CMAKE_LIBRARY_OUTPUT_DIRECTORY_${CONFIGURATION_TYPE} 
+        ${CMAKE_BINARY_DIR}/lib)
+    set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY_${CONFIGURATION_TYPE} 
+        ${CMAKE_BINARY_DIR}/lib)
+endforeach(CONFIGURATION_TYPE CMAKE_CONFIGURATION_TYPES)
 
 
 
