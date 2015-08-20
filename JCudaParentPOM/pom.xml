@@ -32,6 +32,70 @@
         </developer>
     </developers>
 
+    <!--
+      Define properties that are required for naming and identifying the
+      native libraries, based on the operating system and architecture:
+      
+          jcuda.os     : The short name for the operating system
+          jcuda.arch   : The architecture of the target platform
+          jcuda.ext    : The extension of the native libraries
+          jcuda.libDir : The default CMake library output directory
+      
+      The native libraries will be named according to
+          LibraryName-${jcuda.os}-${jcuda.arch}.${jcuda.ext}
+      e.g.
+          JCudaDriver-windows-x86_64.dll
+    -->
+    
+    <profiles>
+        <profile>
+            <id>windows-x86_64</id>
+            <activation>
+                <os>
+                    <family>windows</family>
+                    <arch>amd64</arch>
+                </os>
+            </activation>
+            <properties>
+                <jcuda.os>windows</jcuda.os>
+                <jcuda.arch>x86_64</jcuda.arch>
+                <jcuda.ext>dll</jcuda.ext>
+                <jcuda.libDir>${project.basedir}/../../nativeLibraries</jcuda.libDir>
+            </properties>
+        </profile>
+        <profile>
+            <id>linux-x86_64</id>
+            <activation>
+                <os>
+                    <family>unix</family>
+                    <arch>amd64</arch>
+                </os>
+            </activation>
+            <properties>
+                <jcuda.os>linux</jcuda.os>
+                <jcuda.arch>x86_64</jcuda.arch>
+                <jcuda.ext>so</jcuda.ext>
+                <jcuda.libDir>${project.basedir}/../../nativeLibraries</jcuda.libDir>
+            </properties>
+        </profile>
+        <profile>
+            <id>apple-x86_64</id>
+            <activation>
+                <os>
+                    <family>mac</family>
+                    <arch>x86_64</arch>
+                </os>
+            </activation>
+            <properties>
+                <jcuda.os>apple</jcuda.os>
+                <jcuda.arch>x86_64</jcuda.arch>
+                <jcuda.ext>dylib</jcuda.ext>
+                <jcuda.libDir>${project.basedir}/../../nativeLibraries</jcuda.libDir>
+            </properties>
+        </profile>
+    </profiles>
+    
+
     <build>
         <plugins>
 
@@ -45,7 +109,7 @@
                 <artifactId>maven-surefire-plugin</artifactId>
                 <version>2.18.1</version>
                 <configuration>
-                    <argLine>-Djava.library.path=${project.basedir}/../../nativeLibraries/</argLine>
+                    <argLine>-Djava.library.path=${jcuda.libDir}</argLine>
                 </configuration>
             </plugin>
 
@@ -77,6 +141,10 @@
                 <artifactId>maven-javadoc-plugin</artifactId>
                 <version>2.10.1</version>
 
+                <!-- 
+                  Switch of the doclint tests that would cause errors
+                  due to malformed JavaDocs
+                 -->
                 <configuration>
                     <additionalparam>-Xdoclint:none</additionalparam>
                 </configuration>
