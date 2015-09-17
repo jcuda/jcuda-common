@@ -320,6 +320,41 @@ int* getArrayContents(JNIEnv *env, jintArray ja, int* length)
     return result;
 }
 
+/**
+ * Returns the contents of the given array as a newly allocated
+ * array, or NULL if the given array is NULL or any error occurs.
+ * Deleting the returned array is left to the caller. The optional
+ * 'length' argument will store the length of the given array.
+ */
+long long* getArrayContents(JNIEnv *env, jlongArray ja, int* length)
+{
+    if (ja == NULL)
+    {
+        return NULL;
+    }
+    jsize len = env->GetArrayLength(ja);
+    if (length != NULL)
+    {
+        *length = (int)len;
+    }
+    jlong *a = (jlong*)env->GetPrimitiveArrayCritical(ja, NULL);
+    if (a == NULL)
+    {
+        return NULL;
+    }
+    long long *result = new long long[len];
+    if (result == NULL)
+    {
+        env->ReleasePrimitiveArrayCritical(ja, a, JNI_ABORT);
+        return NULL;
+    }
+    for (int i = 0; i<len; i++)
+    {
+        result[i] = (long long)a[i];
+    }
+    env->ReleasePrimitiveArrayCritical(ja, a, JNI_ABORT);
+    return result;
+}
 
 
 /**

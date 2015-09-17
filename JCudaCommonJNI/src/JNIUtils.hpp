@@ -47,8 +47,9 @@ bool set(JNIEnv *env, jlongArray ja, int index, jlong value);
 bool set(JNIEnv *env, jfloatArray ja, int index, jfloat value);
 bool set(JNIEnv *env, jdoubleArray ja, int index, jdouble value);
 
-int* getArrayContents(JNIEnv *env, jintArray ja, int* length=NULL);
-char* getArrayContents(JNIEnv *env, jbyteArray ja, int* length=NULL);
+int* getArrayContents(JNIEnv *env, jintArray ja, int* length = NULL);
+char* getArrayContents(JNIEnv *env, jbyteArray ja, int* length = NULL);
+long long* getArrayContents(JNIEnv *env, jlongArray ja, int* length = NULL);
 
 //bool convertString(JNIEnv *env, jstring js, std::string *s);
 char *convertString(JNIEnv *env, jstring js, int *length=NULL);

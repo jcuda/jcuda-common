@@ -2,7 +2,7 @@
 # Common CMake settings for all JCuda projects
 #
 
-set(JCUDA_CUDA_VERSION 7.0)
+set(JCUDA_CUDA_VERSION 7.5)
 
 
 
