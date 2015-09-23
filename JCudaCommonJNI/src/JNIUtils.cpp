@@ -92,6 +92,27 @@ bool init(JNIEnv *env, jclass cls, jmethodID& method, const char *name, const ch
 }
 
 /**
+* Creates a global reference to the class with the given name and
+* stores it in the given jclass argument, and stores the no-args
+* constructor ID for this class in the given jmethodID.
+* Returns whether this initialization succeeded.
+*/
+bool init(JNIEnv *env, jclass &globalCls, jmethodID &constructor, const char *className)
+{
+    jclass cls = NULL;
+    if (!init(env, cls, className)) return false;
+    if (!init(env, cls, constructor, "<init>", "()V")) return false;
+
+    globalCls = (jclass)env->NewGlobalRef(cls);
+    if (globalCls == NULL)
+    {
+        Logger::log(LOG_ERROR, "Failed to create reference to class %s\n", className);
+        return false;
+    }
+    return true;
+}
+
+/**
  * Initialize the given field ID with the field named 'nativePointer'
  * in the class with the given name
  */
