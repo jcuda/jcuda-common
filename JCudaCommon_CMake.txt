@@ -57,16 +57,6 @@ endforeach(CONFIGURATION_TYPE CMAKE_CONFIGURATION_TYPES)
 
 
 
-##############################################################################
-# Overriding the CMake flags to use static runtime libraries
-# See http://www.cmake.org/Wiki/CMake_FAQ#
-#     How_can_I_build_my_MSVC_application_with_a_static_runtime.3F
-set(CMAKE_USER_MAKE_RULES_OVERRIDE
-   ${CMAKE_CURRENT_SOURCE_DIR}/CMake_c_flag_overrides.cmake)
-set(CMAKE_USER_MAKE_RULES_OVERRIDE_CXX
-   ${CMAKE_CURRENT_SOURCE_DIR}/CMake_cxx_flag_overrides.cmake)
-
-
 
 ##############################################################################
 # Determine the host system, and set the CMAKE_HOST and CMAKE_ARCH variables. 
