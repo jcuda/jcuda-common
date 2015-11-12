@@ -39,7 +39,6 @@
           jcuda.os     : The short name for the operating system
           jcuda.arch   : The architecture of the target platform
           jcuda.ext    : The extension of the native libraries
-          jcuda.libDir : The default CMake library output directory
 
       The native libraries will be named according to
           LibraryName-${jcuda.os}-${jcuda.arch}.${jcuda.ext}
@@ -60,7 +59,6 @@
                 <jcuda.os>windows</jcuda.os>
                 <jcuda.arch>x86_64</jcuda.arch>
                 <jcuda.ext>dll</jcuda.ext>
-                <jcuda.libDir>${session.executionRootDirectory}/nativeLibraries</jcuda.libDir>
             </properties>
         </profile>
         <profile>
@@ -75,7 +73,6 @@
                 <jcuda.os>linux</jcuda.os>
                 <jcuda.arch>x86_64</jcuda.arch>
                 <jcuda.ext>so</jcuda.ext>
-                <jcuda.libDir>${session.executionRootDirectory}/nativeLibraries</jcuda.libDir>
             </properties>
         </profile>
         <profile>
@@ -90,7 +87,6 @@
                 <jcuda.os>apple</jcuda.os>
                 <jcuda.arch>x86_64</jcuda.arch>
                 <jcuda.ext>dylib</jcuda.ext>
-                <jcuda.libDir>${session.executionRootDirectory}/nativeLibraries</jcuda.libDir>
             </properties>
         </profile>
     </profiles>
@@ -101,15 +97,15 @@
 
             <!--
               Configure the maven-surefire-plugin to run the unit tests
-              with a Java library path that points to the default CMake
-              output directory of the native libraries
+              with a Java library path that points to the directory of 
+              the native libraries
             -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
                 <version>2.18.1</version>
                 <configuration>
-                    <argLine>-Djava.library.path=${jcuda.libDir}</argLine>
+                    <argLine>-Djava.library.path=${project.build.directory}/lib</argLine>
                 </configuration>
             </plugin>
 
