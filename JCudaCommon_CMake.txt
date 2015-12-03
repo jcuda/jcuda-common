@@ -42,8 +42,6 @@ set(JCudaCommonJNI_INCLUDE_DIRS
 # single-configuration compilers), and for all configurations (e.g. RELEASE 
 # and MINSIZEREL) for multi-configuration compilers like MSVC). 
 
-message(WARNING "Set runtime output to ${PROJECT_SOURCE_DIR}/nativeLibrary")
-
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY 
     ${PROJECT_SOURCE_DIR}/nativeLibrary)
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY 
