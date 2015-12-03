@@ -59,6 +59,7 @@
                 <jcuda.os>windows</jcuda.os>
                 <jcuda.arch>x86_64</jcuda.arch>
                 <jcuda.ext>dll</jcuda.ext>
+                <jcuda.prefix></jcuda.prefix>
             </properties>
         </profile>
         <profile>
@@ -73,6 +74,7 @@
                 <jcuda.os>linux</jcuda.os>
                 <jcuda.arch>x86_64</jcuda.arch>
                 <jcuda.ext>so</jcuda.ext>
+                <jcuda.prefix>lib</jcuda.prefix>
             </properties>
         </profile>
         <profile>
@@ -87,6 +89,7 @@
                 <jcuda.os>apple</jcuda.os>
                 <jcuda.arch>x86_64</jcuda.arch>
                 <jcuda.ext>dylib</jcuda.ext>
+                <jcuda.prefix>lib</jcuda.prefix>
             </properties>
         </profile>
     </profiles>
@@ -97,7 +100,7 @@
 
             <!--
               Configure the maven-surefire-plugin to run the unit tests
-              with a Java library path that points to the directory of 
+              with a Java library path that points to the directory of
               the native libraries
             -->
             <plugin>
