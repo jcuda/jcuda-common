@@ -8,22 +8,3 @@ set(CMAKE_USER_MAKE_RULES_OVERRIDE
 set(CMAKE_USER_MAKE_RULES_OVERRIDE_CXX
    ${CMAKE_CURRENT_LIST_DIR}/CMake_cxx_flag_overrides.cmake)
 
-
-
-##############################################################################
-# The compilation on MacOS >=10.11 and above requires additional
-# linker flags. In order to detect whether MacOS >=10.11 is present,
-# the underlying Darwin version number is checked here (see
-# https://en.wikipedia.org/wiki/Darwin_%28operating_system%29)
-# If it is not less than 15.0.0, then MacOS 10.11 or greater is running.
-# The flags are added ONCE, to the CMAKE_SHARED_LINKER_FLAGS variable
-if (NOT CMAKE_CUDA_SHARED_LINKER_FLAGS_INITIALIZED)
-    if(CMAKE_HOST_APPLE)
-        if(NOT (CMAKE_SYSTEM_VERSION VERSION_LESS 15.0.0))
-            set(CMAKE_SHARED_LINKER_FLAGS 
-                "${CMAKE_SHARED_LINKER_FLAGS} -Xlinker -F/Library/Frameworks -Xlinker -framework -Xlinker CUDA") 
-        endif()
-    endif()
-    set(CMAKE_CUDA_SHARED_LINKER_FLAGS_INITIALIZED "true")
-endif()
-

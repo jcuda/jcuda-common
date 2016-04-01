@@ -85,3 +85,24 @@ else()
     set(CMAKE_ARCH "x86")
   endif()
 endif()
+
+
+##############################################################################
+# The compilation on MacOS >=10.11 and above requires additional
+# linker flags. In order to detect whether MacOS >=10.11 is present,
+# the underlying Darwin version number is checked here (see
+# https://en.wikipedia.org/wiki/Darwin_%28operating_system%29)
+# If it is greater than 14, then MacOS 10.11 or greater is running.
+# The flags are added ONCE, to the CMAKE_SHARED_LINKER_FLAGS variable
+if (NOT CMAKE_CUDA_SHARED_LINKER_FLAGS_INITIALIZED)
+    if(CMAKE_HOST_APPLE)
+        string(REGEX REPLACE "^([0-9]+)\\.([0-9]+).*$" "\\1" 
+            DARWIN_MAJOR_VERSION ${CMAKE_SYSTEM_VERSION})
+        if(${DARWIN_MAJOR_VERSION} GREATER 14)    
+            set(CMAKE_SHARED_LINKER_FLAGS 
+                "${CMAKE_SHARED_LINKER_FLAGS} -Xlinker -F/Library/Frameworks -Xlinker -framework -Xlinker CUDA") 
+        endif()
+    endif()
+    set(CMAKE_CUDA_SHARED_LINKER_FLAGS_INITIALIZED "true")
+endif()
+
