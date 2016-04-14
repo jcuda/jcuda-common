@@ -55,6 +55,9 @@ long long* getArrayContents(JNIEnv *env, jlongArray ja, int* length = NULL);
 //bool convertString(JNIEnv *env, jstring js, std::string *s);
 char *convertString(JNIEnv *env, jstring js, int *length=NULL);
 
+char **convertStringArray(JNIEnv *env, jobjectArray jsa, int *length=NULL);
+void deleteStringArray(char** &array, int length);
+
 //std::string getToString(JNIEnv *env, jobject object);
 
 void ThrowByName(JNIEnv *env, const char *name, const char *msg);

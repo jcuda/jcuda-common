@@ -406,6 +406,12 @@ bool convertString(JNIEnv *env, jstring js, std::string *s)
  * The optional length pointer will store the length of
  * the converted string, WITHOUT the trailing 0. Returns
  * NULL if an arror occurs.
+ *
+ * (Note: This is intended to properly translate between
+ * unicode strings and locale-specific strings, in contrast
+ * to the built-in methods for converting strings. 
+ * See https://web.archive.org/web/20120626012047/http://
+ *    java.sun.com/docs/books/jni/html/pitfalls.html )
  */
 char *convertString(JNIEnv *env, jstring js, int *length)
 {
@@ -437,6 +443,65 @@ char *convertString(JNIEnv *env, jstring js, int *length)
     }
     return result;
 }
+
+/**
+ * Convert the given string array into an array of 0-terminated
+ * char*s. If the given array contains "null" elements, then
+ * the corresponding element in the returned array wil be NULL.
+ * To delete the individual char* pointers and the returned
+ * array is left to the caller. The optional length pointer
+ * will store the length of the returned array.
+ * Returns NULL if an error occurs (or if the given array is NULL).
+ */
+char **convertStringArray(JNIEnv *env, jobjectArray jsa, int *length)
+{
+    if (jsa == NULL)
+    {
+        return NULL;
+    }
+    jsize len = env->GetArrayLength(jsa);
+    if (length != NULL)
+    {
+        *length = (int)len;
+    }
+    char **result = new char*[len];
+    for (int i = 0; i < len; i++)
+    {
+        jstring js = (jstring)env->GetObjectArrayElement(jsa, i);
+        if (js == NULL)
+        {
+            result[i] = NULL;
+        }
+        else
+        {
+            result[i] = convertString(env, js);
+            if (result == NULL)
+            {
+                return NULL;
+            }
+        }
+    }
+    return result;
+}
+
+/**
+ * Delete all elements of the given array, and the array itself,
+ * if it is not already NULL
+ */
+void deleteStringArray(char** &array, int length)
+{
+    if (array == NULL)
+    {
+        return;
+    }
+    for (int i = 0; i < length; i++)
+    {
+        delete[] array[i];
+    }
+    delete[] array;
+    array = NULL;
+}
+
 
 /**
  * Returns the result of calling 'toString' on the given object.

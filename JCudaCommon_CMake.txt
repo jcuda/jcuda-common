@@ -20,6 +20,11 @@ set(CMAKE_MODULE_PATH
 
 if (NOT CUDA_FOUND)
     find_package(CUDA ${JCUDA_CUDA_VERSION} REQUIRED)
+    
+    # Try to find the NVRTC library in the same directory
+    # as the CUDA_CUDA_LIBRARY
+    get_filename_component(CUDA_LIBRARY_DIR "${CUDA_CUDA_LIBRARY}" PATH)
+    find_library(CUDA_nvrtc_LIBRARY nvrtc ${CUDA_LIBRARY_DIR})
 endif()
 
 if (NOT JNI_FOUND)
