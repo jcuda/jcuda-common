@@ -18,4 +18,7 @@ add_library(${PROJECT_NAME}
     src/PointerUtils.cpp
 )
 
-set_target_properties(${PROJECT_NAME} PROPERTIES COMPILE_FLAGS -fPIC)
+if (UNIX AND NOT WIN32)
+    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fPIC")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC")
+endif(UNIX AND NOT WIN32)
