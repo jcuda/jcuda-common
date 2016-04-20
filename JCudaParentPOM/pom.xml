@@ -92,6 +92,21 @@
                 <jcuda.prefix>lib</jcuda.prefix>
             </properties>
         </profile>
+        <profile>
+            <id>linux-ppc_64</id>
+            <activation>
+                <os>
+                    <family>unix</family>
+                    <arch>ppc64le</arch>
+                </os>
+            </activation>
+            <properties>
+                <jcuda.os>linux</jcuda.os>
+                <jcuda.arch>ppc_64</jcuda.arch>
+                <jcuda.ext>so</jcuda.ext>
+                <jcuda.prefix>lib</jcuda.prefix>
+            </properties>
+        </profile>
     </profiles>
 
 
