@@ -4,7 +4,7 @@
 
 set(JCUDA_CUDA_VERSION 7.5)
 
-
+set(JCUDA_VERSION 0.7.5c)
 
 ##############################################################################
 # Set the CMake module path so that FindCUDA.cmake can be found
@@ -43,55 +43,57 @@ set(JCudaCommonJNI_INCLUDE_DIRS
 
 
 ##############################################################################
-# Set the output directories for the built libraries: The runtime libraties
-# (e.g. the DLLs) will be placed into a subdirectory of the source 
-# directory, called "nativeLibrary". This will be done generally (for
-# single-configuration compilers), and for all configurations (e.g. RELEASE 
-# and MINSIZEREL) for multi-configuration compilers like MSVC). 
-
-set(CMAKE_RUNTIME_OUTPUT_DIRECTORY 
-    ${PROJECT_SOURCE_DIR}/nativeLibrary)
-set(CMAKE_LIBRARY_OUTPUT_DIRECTORY 
-    ${PROJECT_SOURCE_DIR}/nativeLibrary)
-set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
-foreach(CONFIGURATION_TYPE ${CMAKE_CONFIGURATION_TYPES})
-    string(TOUPPER ${CONFIGURATION_TYPE} CONFIGURATION_TYPE)
-    set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_${CONFIGURATION_TYPE} 
-        ${PROJECT_SOURCE_DIR}/nativeLibrary)
-    set(CMAKE_LIBRARY_OUTPUT_DIRECTORY_${CONFIGURATION_TYPE} 
-        ${PROJECT_SOURCE_DIR}/nativeLibrary)
-    set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY_${CONFIGURATION_TYPE} 
-        ${CMAKE_BINARY_DIR}/lib)
-endforeach(CONFIGURATION_TYPE CMAKE_CONFIGURATION_TYPES)
-
-
-
-
-##############################################################################
-# Determine the host system, and set the CMAKE_HOST and CMAKE_ARCH variables. 
+# Determine the host system, and set the JCUDA_OS and JCUDA_ARCH variables. 
 # These will be used by the individual library CMake files to build the 
 # final library name, e.g. "jcuda-windows-x86_64.dll"
 
 if(CMAKE_HOST_WIN32)
-  set(CMAKE_HOST "windows")
+  set(JCUDA_OS "windows")
 elseif(CMAKE_HOST_APPLE)
-  set(CMAKE_HOST "apple")
+  set(JCUDA_OS "apple")
   set(CMAKE_SKIP_RPATH FALSE)
 elseif(CMAKE_HOST_UNIX)
-  set(CMAKE_HOST "linux")
+  set(JCUDA_OS "linux")
 endif()
 
 if(CMAKE_SYSTEM_PROCESSOR MATCHES "ppc*")
   if(CMAKE_SIZEOF_VOID_P EQUAL 8)
-    set(CMAKE_ARCH "ppc_64")
+    set(JCUDA_ARCH "ppc_64")
   endif()
 else()
   if(CMAKE_SIZEOF_VOID_P EQUAL 8)
-    set(CMAKE_ARCH "x86_64")
+    set(JCUDA_ARCH "x86_64")
   else()
-    set(CMAKE_ARCH "x86")
+    set(JCUDA_ARCH "x86")
   endif()
 endif()
+
+
+##############################################################################
+# Set the output directories for the built libraries: The runtime libraries
+# (e.g. the DLLs) will be placed into a directory that later will be picked
+# up by the Maven build to generate the JAR that contains the native library.
+# This will be done generally for single-configuration compilers, and for 
+# all configurations (e.g. RELEASE and MINSIZEREL) for multi-configuration 
+# compilers like MSVC. 
+
+set(JCUDA_NATIVE_LIBRARY_DIRECTORY 
+    ../nativeLibraries/${JCUDA_OS}/${JCUDA_ARCH}/lib)
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY 
+    ${PROJECT_SOURCE_DIR}/${JCUDA_NATIVE_LIBRARY_DIRECTORY})
+set(CMAKE_LIBRARY_OUTPUT_DIRECTORY 
+    ${PROJECT_SOURCE_DIR}/${JCUDA_NATIVE_LIBRARY_DIRECTORY})
+set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
+foreach(CONFIGURATION_TYPE ${CMAKE_CONFIGURATION_TYPES})
+    string(TOUPPER ${CONFIGURATION_TYPE} CONFIGURATION_TYPE)
+    set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_${CONFIGURATION_TYPE} 
+        ${PROJECT_SOURCE_DIR}/${JCUDA_NATIVE_LIBRARY_DIRECTORY})
+    set(CMAKE_LIBRARY_OUTPUT_DIRECTORY_${CONFIGURATION_TYPE} 
+        ${PROJECT_SOURCE_DIR}/${JCUDA_NATIVE_LIBRARY_DIRECTORY})
+    set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY_${CONFIGURATION_TYPE} 
+        ${CMAKE_BINARY_DIR}/lib)
+endforeach(CONFIGURATION_TYPE CMAKE_CONFIGURATION_TYPES)
+
 
 
 ##############################################################################
@@ -101,6 +103,7 @@ endif()
 # https://en.wikipedia.org/wiki/Darwin_%28operating_system%29)
 # If it is greater than 14, then MacOS 10.11 or greater is running.
 # The flags are added ONCE, to the CMAKE_SHARED_LINKER_FLAGS variable
+
 if (NOT CMAKE_CUDA_SHARED_LINKER_FLAGS_INITIALIZED)
     if(CMAKE_HOST_APPLE)
         string(REGEX REPLACE "^([0-9]+)\\.([0-9]+).*$" "\\1" 
