@@ -66,5 +66,85 @@ int initJNIUtils(JNIEnv *env);
 
 extern jmethodID String_getBytes; // ()[B
 
+/**
+* Create an int array with the same size as the given java array,
+* and store it in the given pointer. The caller must delete[] the
+* created array. The fill-flag indicates whether the array should
+* be initialized with the data from the given array
+*/
+template <typename JavaArrayType, typename JavaType, typename NativeType>
+bool initNativeGeneric(JNIEnv *env, JavaArrayType &javaObject, NativeType* &nativeObject, bool fill)
+{
+    if (javaObject == NULL)
+    {
+        nativeObject = NULL;
+        return true;
+    }
+    jsize length = env->GetArrayLength(javaObject);
+    nativeObject = new NativeType[size_t(length)];
+    if (nativeObject == NULL)
+    {
+        ThrowByName(env, "java/lang/OutOfMemoryError",
+            "Out of memory during array creation");
+        return false;
+    }
+    if (fill)
+    {
+        JavaType *primitiveArray =
+            (JavaType*)env->GetPrimitiveArrayCritical(javaObject, NULL);
+        if (primitiveArray == NULL)
+        {
+            delete[] nativeObject;
+            nativeObject = NULL;
+            return false;
+        }
+        for (jint i = 0; i < length; i++)
+        {
+            nativeObject[i] = (NativeType)primitiveArray[i];
+        }
+        env->ReleasePrimitiveArrayCritical(javaObject, primitiveArray, JNI_ABORT);
+    }
+    return true;
+}
+
+/**
+* Release the given array by deleting it and setting the pointer to NULL.
+* The writeBack flag indicates whether the data from the given array
+* should be written into the given java array
+*/
+template <typename JavaType, typename JavaArrayType, typename NativeType>
+bool releaseNativeGeneric(JNIEnv *env, NativeType* &nativeObject, JavaArrayType &javaObject, bool writeBack)
+{
+    if (javaObject == NULL)
+    {
+        delete[] nativeObject;
+        nativeObject = NULL;
+        return true;
+    }
+    if (writeBack)
+    {
+        jsize length = env->GetArrayLength(javaObject);
+        JavaType *primitiveArray =
+            (JavaType*)env->GetPrimitiveArrayCritical(javaObject, NULL);
+        if (primitiveArray == NULL)
+        {
+            delete[] nativeObject;
+            nativeObject = NULL;
+            return false;
+        }
+        for (jint i = 0; i < length; i++)
+        {
+            primitiveArray[i] = (JavaType)nativeObject[i];
+        }
+        env->ReleasePrimitiveArrayCritical(javaObject, primitiveArray, 0);
+    }
+    delete[] nativeObject;
+    nativeObject = NULL;
+    return true;
+}
+
+bool initNative(JNIEnv *env, jintArray javaObject, int* &nativeObject, bool fill);
+bool releaseNative(JNIEnv *env, int* &nativeObject, jintArray javaObject, bool writeBack);
+
 
 #endif

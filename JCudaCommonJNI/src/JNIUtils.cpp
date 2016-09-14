@@ -503,6 +503,19 @@ void deleteStringArray(char** &array, int length)
 }
 
 
+
+
+bool initNative(JNIEnv *env, jintArray javaObject, int* &nativeObject, bool fill)
+{
+    return initNativeGeneric<jintArray, jint, int>(env, javaObject, nativeObject, fill);
+}
+bool releaseNative(JNIEnv *env, int* &nativeObject, jintArray javaObject, bool writeBack)
+{
+    return releaseNativeGeneric<jint, jintArray, int>(env, nativeObject, javaObject, writeBack);
+}
+
+
+
 /**
  * Returns the result of calling 'toString' on the given object.
  */
