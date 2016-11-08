@@ -52,6 +52,37 @@ int* getArrayContents(JNIEnv *env, jintArray ja, int* length = NULL);
 char* getArrayContents(JNIEnv *env, jbyteArray ja, int* length = NULL);
 long long* getArrayContents(JNIEnv *env, jlongArray ja, int* length = NULL);
 
+template <typename JavaArray, typename JavaElement, typename NativeElement>
+NativeElement* getArrayContentsGeneric(JNIEnv *env, JavaArray ja, int* length = NULL)
+{
+    if (ja == NULL)
+    {
+        return NULL;
+    }
+    jsize len = env->GetArrayLength(ja);
+    if (length != NULL)
+    {
+        *length = (int)len;
+    }
+    JavaElement *a = (JavaElement*)env->GetPrimitiveArrayCritical(ja, NULL);
+    if (a == NULL)
+    {
+        return NULL;
+    }
+    NativeElement *result = new NativeElement[len];
+    if (result == NULL)
+    {
+        env->ReleasePrimitiveArrayCritical(ja, a, JNI_ABORT);
+        return NULL;
+    }
+    for (int i = 0; i<len; i++)
+    {
+        result[i] = (NativeElement)a[i];
+    }
+    env->ReleasePrimitiveArrayCritical(ja, a, JNI_ABORT);
+    return result;
+}
+
 //bool convertString(JNIEnv *env, jstring js, std::string *s);
 char *convertString(JNIEnv *env, jstring js, int *length=NULL);
 
