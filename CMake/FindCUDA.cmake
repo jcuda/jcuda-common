@@ -316,6 +316,10 @@
 #                            Windows only.
 #
 
+#   CUDA_nvgraph_LIBRARY  -- CUDA graph library
+#                            Only available for CUDA version 8.0+.
+
+
 #   James Bigler, NVIDIA Corp (nvidia.com - jbigler)
 #   Abe Stephens, SCI Institute -- http://www.sci.utah.edu/~abe/FindCuda.html
 #
@@ -553,6 +557,7 @@ macro(cuda_unset_include_and_libraries)
   unset(CUDA_npps_LIBRARY CACHE)
   unset(CUDA_nvcuvenc_LIBRARY CACHE)
   unset(CUDA_nvcuvid_LIBRARY CACHE)
+  unset(CUDA_nvgraph_LIBRARY CACHE)
 
   unset(CUDA_USE_STATIC_CUDA_RUNTIME CACHE)
 endmacro()
@@ -854,6 +859,11 @@ endif()
 if(NOT CUDA_VERSION VERSION_LESS "7.0")
   # cusolver showed up in version 7.0
   find_cuda_helper_libs(cusolver)
+endif()
+
+if(NOT CUDA_VERSION VERSION_LESS "8.0")
+  # nvgraph showed up in version 8.0
+  find_cuda_helper_libs(nvgraph)
 endif()
 
 if (CUDA_BUILD_EMULATION)
@@ -1802,6 +1812,17 @@ endif()
 if(CUDA_VERSION VERSION_GREATER "6.5")
 macro(CUDA_ADD_CUSOLVER_TO_TARGET target)
   target_link_libraries(${target} ${CUDA_cusolver_LIBRARY})
+endmacro()
+endif()
+
+###############################################################################
+###############################################################################
+# CUDA ADD NVGRAPH TO TARGET
+###############################################################################
+###############################################################################
+if(CUDA_VERSION VERSION_GREATER "7.5")
+macro(CUDA_ADD_NVGRAPH_TO_TARGET target)
+  target_link_libraries(${target} ${CUDA_nvgraph_LIBRARY})
 endmacro()
 endif()
 
