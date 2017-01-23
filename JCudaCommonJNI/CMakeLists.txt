@@ -16,6 +16,7 @@ add_library(${PROJECT_NAME}
     src/JNIUtils.cpp
     src/Logger.cpp
     src/PointerUtils.cpp
+    src/CallbackUtils.cpp
 )
 
 if (UNIX AND NOT WIN32)
