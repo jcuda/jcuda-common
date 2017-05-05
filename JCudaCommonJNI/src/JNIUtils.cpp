@@ -62,6 +62,24 @@ bool init(JNIEnv *env, jclass& cls, const char *name)
 }
 
 /**
+* Creates a global reference to the class with the given name and
+* stores it in the given jclass argument.
+* Returns whether this initialization succeeded.
+*/
+bool initGlobal(JNIEnv *env, jclass &globalCls, const char *className)
+{
+    jclass cls = NULL;
+    if (!init(env, cls, className)) return false;
+    globalCls = (jclass)env->NewGlobalRef(cls);
+    if (globalCls == NULL)
+    {
+        Logger::log(LOG_ERROR, "Failed to create reference to class %s\n", className);
+        return false;
+    }
+    return true;
+}
+
+/**
  * Initialize the specified field ID, and return whether
  * the initialization succeeded
  */

@@ -38,6 +38,7 @@
 
 
 bool init(JNIEnv *env, jclass& cls, const char *name);
+bool initGlobal(JNIEnv *env, jclass &globalCls, const char *className);
 bool init(JNIEnv *env, jclass cls, jfieldID& field, const char *name, const char *signature);
 bool init(JNIEnv *env, jclass cls, jmethodID& method, const char *name, const char *signature);
 bool init(JNIEnv *env, jclass& globalCls, jmethodID& constructor, const char *className);
