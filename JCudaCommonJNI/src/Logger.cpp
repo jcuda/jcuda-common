@@ -40,6 +40,7 @@ void Logger::log(LogLevel level, const char *message, ...)
         va_start(argp, message);
         vfprintf(stdout, message, argp);
         va_end(argp);
+        fflush(stdout);
     }
 }
 
