@@ -119,7 +119,96 @@ NativeElement* getIntArrayContentsGeneric(JNIEnv *env, jintArray ja, int* length
     return result;
 }
 
+template <typename NativeElement>
+void readIntArrayContentsGeneric(JNIEnv *env, jintArray ja, NativeElement* target, int* length = NULL)
+{
+    if (ja == NULL)
+    {
+        return;
+    }
+    if (target == NULL)
+    {
+        return;
+    }
+    jsize len = env->GetArrayLength(ja);
+    if (length != NULL)
+    {
+        *length = (int)len;
+    }
+    jint* a = env->GetIntArrayElements(ja, NULL);
+    if (a == NULL)
+    {
+        // OutOfMemoryError is pending
+        return;
+    }
+    for (int i = 0; i<len; i++)
+    {
+        target[i] = (NativeElement)a[i];
+    }
+    env->ReleaseIntArrayElements(ja, a, JNI_ABORT);
+}
 
+template <typename NativeElement>
+void writeIntArrayContentsGeneric(JNIEnv *env, NativeElement* source, jintArray ja, int* length = NULL)
+{
+    if (ja == NULL)
+    {
+        return;
+    }
+    if (source == NULL)
+    {
+        return;
+    }
+    jsize len = env->GetArrayLength(ja);
+    if (length != NULL)
+    {
+        *length = (int)len;
+    }
+    jint* a = env->GetIntArrayElements(ja, NULL);
+    if (a == NULL)
+    {
+        // OutOfMemoryError is pending
+        return;
+    }
+    for (int i = 0; i<len; i++)
+    {
+        a[i] = (jint)source[i];
+    }
+    env->ReleaseIntArrayElements(ja, a, 0);
+}
+
+template <typename NativeElement>
+void writeLongArrayContentsGeneric(JNIEnv *env, NativeElement* source, jlongArray ja, int* length = NULL)
+{
+    if (ja == NULL)
+    {
+        return;
+    }
+    if (source == NULL)
+    {
+        return;
+    }
+    jsize len = env->GetArrayLength(ja);
+    if (length != NULL)
+    {
+        *length = (int)len;
+    }
+    jlong* a = env->GetLongArrayElements(ja, NULL);
+    if (a == NULL)
+    {
+        // OutOfMemoryError is pending
+        return;
+    }
+    for (int i = 0; i<len; i++)
+    {
+        a[i] = (jlong)source[i];
+    }
+    env->ReleaseLongArrayElements(ja, a, 0);
+}
+
+
+void readFloatArrayContents(JNIEnv *env, jfloatArray ja, float* target, int* length = NULL);
+void writeFloatArrayContents(JNIEnv *env, float* source, jfloatArray ja, int* length = NULL);
 
 
 //bool convertString(JNIEnv *env, jstring js, std::string *s);

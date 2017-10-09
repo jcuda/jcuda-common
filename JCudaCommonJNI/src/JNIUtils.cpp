@@ -367,6 +367,57 @@ long long* getArrayContents(JNIEnv *env, jlongArray ja, int* length)
 }
 
 
+void readFloatArrayContents(JNIEnv *env, jfloatArray ja, float* target, int* length)
+{
+    if (ja == NULL)
+    {
+        return;
+    }
+    if (target == NULL)
+    {
+        return;
+    }
+    jsize len = env->GetArrayLength(ja);
+    if (length != NULL)
+    {
+        *length = (int)len;
+    }
+    jfloat* a = env->GetFloatArrayElements(ja, NULL);
+    if (a == NULL)
+    {
+        // OutOfMemoryError is pending
+        return;
+    }
+    memcpy(target, a, len * sizeof(float));
+    env->ReleaseFloatArrayElements(ja, a, JNI_ABORT);
+}
+
+void writeFloatArrayContents(JNIEnv *env, float* source, jfloatArray ja, int* length)
+{
+    if (ja == NULL)
+    {
+        return;
+    }
+    if (source == NULL)
+    {
+        return;
+    }
+    jsize len = env->GetArrayLength(ja);
+    if (length != NULL)
+    {
+        *length = (int)len;
+    }
+    jfloat* a = env->GetFloatArrayElements(ja, NULL);
+    if (a == NULL)
+    {
+        // OutOfMemoryError is pending
+        return;
+    }
+    memcpy(a, source, len * sizeof(float));
+    env->ReleaseFloatArrayElements(ja, a, JNI_ABORT);
+}
+
+
 /**
  * Converts the given jstring into a string and writes
  * the result into *s.
