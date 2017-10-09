@@ -53,8 +53,8 @@ int* getArrayContents(JNIEnv *env, jintArray ja, int* length = NULL);
 char* getArrayContents(JNIEnv *env, jbyteArray ja, int* length = NULL);
 long long* getArrayContents(JNIEnv *env, jlongArray ja, int* length = NULL);
 
-template <typename JavaArray, typename JavaElement, typename NativeElement>
-NativeElement* getArrayContentsGeneric(JNIEnv *env, JavaArray ja, int* length = NULL)
+template <typename NativeElement>
+NativeElement* getLongArrayContentsGeneric(JNIEnv *env, jlongArray ja, int* length = NULL)
 {
     if (ja == NULL)
     {
@@ -65,24 +65,62 @@ NativeElement* getArrayContentsGeneric(JNIEnv *env, JavaArray ja, int* length = 
     {
         *length = (int)len;
     }
-    JavaElement *a = (JavaElement*)env->GetPrimitiveArrayCritical(ja, NULL);
+    jlong* a = env->GetLongArrayElements(ja, NULL);
     if (a == NULL)
     {
+        // OutOfMemoryError is pending
         return NULL;
     }
     NativeElement *result = new NativeElement[len];
     if (result == NULL)
     {
-        env->ReleasePrimitiveArrayCritical(ja, a, JNI_ABORT);
+        ThrowByName(env, "java/lang/OutOfMemoryError",
+            "Out of memory during array creation");
         return NULL;
     }
     for (int i = 0; i<len; i++)
     {
         result[i] = (NativeElement)a[i];
     }
-    env->ReleasePrimitiveArrayCritical(ja, a, JNI_ABORT);
+    env->ReleaseLongArrayElements(ja, a, JNI_ABORT);
     return result;
 }
+
+template <typename NativeElement>
+NativeElement* getIntArrayContentsGeneric(JNIEnv *env, jintArray ja, int* length = NULL)
+{
+    if (ja == NULL)
+    {
+        return NULL;
+    }
+    jsize len = env->GetArrayLength(ja);
+    if (length != NULL)
+    {
+        *length = (int)len;
+    }
+    jint* a = env->GetIntArrayElements(ja, NULL);
+    if (a == NULL)
+    {
+        // OutOfMemoryError is pending
+        return NULL;
+    }
+    NativeElement *result = new NativeElement[len];
+    if (result == NULL)
+    {
+        ThrowByName(env, "java/lang/OutOfMemoryError",
+            "Out of memory during array creation");
+        return NULL;
+    }
+    for (int i = 0; i<len; i++)
+    {
+        result[i] = (NativeElement)a[i];
+    }
+    env->ReleaseIntArrayElements(ja, a, JNI_ABORT);
+    return result;
+}
+
+
+
 
 //bool convertString(JNIEnv *env, jstring js, std::string *s);
 char *convertString(JNIEnv *env, jstring js, int *length=NULL);
@@ -104,78 +142,13 @@ extern jmethodID String_getBytes; // ()[B
 * created array. The fill-flag indicates whether the array should
 * be initialized with the data from the given array
 */
-template <typename JavaArrayType, typename JavaType, typename NativeType>
-bool initNativeGeneric(JNIEnv *env, JavaArrayType &javaObject, NativeType* &nativeObject, bool fill)
-{
-    if (javaObject == NULL)
-    {
-        nativeObject = NULL;
-        return true;
-    }
-    jsize length = env->GetArrayLength(javaObject);
-    nativeObject = new NativeType[size_t(length)];
-    if (nativeObject == NULL)
-    {
-        ThrowByName(env, "java/lang/OutOfMemoryError",
-            "Out of memory during array creation");
-        return false;
-    }
-    if (fill)
-    {
-        JavaType *primitiveArray =
-            (JavaType*)env->GetPrimitiveArrayCritical(javaObject, NULL);
-        if (primitiveArray == NULL)
-        {
-            delete[] nativeObject;
-            nativeObject = NULL;
-            return false;
-        }
-        for (jint i = 0; i < length; i++)
-        {
-            nativeObject[i] = (NativeType)primitiveArray[i];
-        }
-        env->ReleasePrimitiveArrayCritical(javaObject, primitiveArray, JNI_ABORT);
-    }
-    return true;
-}
+bool initNative(JNIEnv *env, jintArray javaObject, int* &nativeObject, bool fill);
 
 /**
 * Release the given array by deleting it and setting the pointer to NULL.
 * The writeBack flag indicates whether the data from the given array
 * should be written into the given java array
 */
-template <typename JavaType, typename JavaArrayType, typename NativeType>
-bool releaseNativeGeneric(JNIEnv *env, NativeType* &nativeObject, JavaArrayType &javaObject, bool writeBack)
-{
-    if (javaObject == NULL)
-    {
-        delete[] nativeObject;
-        nativeObject = NULL;
-        return true;
-    }
-    if (writeBack)
-    {
-        jsize length = env->GetArrayLength(javaObject);
-        JavaType *primitiveArray =
-            (JavaType*)env->GetPrimitiveArrayCritical(javaObject, NULL);
-        if (primitiveArray == NULL)
-        {
-            delete[] nativeObject;
-            nativeObject = NULL;
-            return false;
-        }
-        for (jint i = 0; i < length; i++)
-        {
-            primitiveArray[i] = (JavaType)nativeObject[i];
-        }
-        env->ReleasePrimitiveArrayCritical(javaObject, primitiveArray, 0);
-    }
-    delete[] nativeObject;
-    nativeObject = NULL;
-    return true;
-}
-
-bool initNative(JNIEnv *env, jintArray javaObject, int* &nativeObject, bool fill);
 bool releaseNative(JNIEnv *env, int* &nativeObject, jintArray javaObject, bool writeBack);
 
 

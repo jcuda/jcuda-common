@@ -167,60 +167,44 @@ void ThrowByName(JNIEnv *env, const char *name, const char *msg)
 
 
 /**
- * Set the element at the given index in the given array to
- * the given value. If the array is NULL, nothing is done.
- * Returns 'false' if an OutOfMemoryError occurred or an
- * ArrayIndexOutOfBoundsExcepton was caused.
- */
+* Set the element at the given index in the given array to
+* the given value. If the array is NULL, nothing is done.
+* Returns 'false' if an ArrayIndexOutOfBoundsExcepton was
+* caused.
+*/
 bool set(JNIEnv *env, jintArray ja, int index, jint value)
 {
     if (ja == NULL)
     {
         return true;
     }
-    jsize len = env->GetArrayLength(ja);
-    if (index < 0 || index >= len)
+    env->SetIntArrayRegion(ja, index, 1, &value);
+    if (env->ExceptionCheck())
     {
-        ThrowByName(env, "java/lang/ArrayIndexOutOfBoundsException",
-            "Array index out of bounds");
+        // ArrayIndexOutOfBoundsException is pending
         return false;
     }
-    jint *a = (jint*)env->GetPrimitiveArrayCritical(ja, NULL);
-    if (a == NULL)
-    {
-        return false;
-    }
-    a[index] = value;
-    env->ReleasePrimitiveArrayCritical(ja, a, 0);
     return true;
 }
 
 /**
- * Set the element at the given index in the given array to
- * the given value. If the array is NULL, nothing is done.
- * Returns 'false' if an OutOfMemoryError occurred or an
- * ArrayIndexOutOfBoundsExcepton was caused.
- */
+* Set the element at the given index in the given array to
+* the given value. If the array is NULL, nothing is done.
+* Returns 'false' if an ArrayIndexOutOfBoundsExcepton was
+* caused.
+*/
 bool set(JNIEnv *env, jlongArray ja, int index, jlong value)
 {
     if (ja == NULL)
     {
         return true;
     }
-    jsize len = env->GetArrayLength(ja);
-    if (index < 0 || index >= len)
+    env->SetLongArrayRegion(ja, index, 1, &value);
+    if (env->ExceptionCheck())
     {
-        ThrowByName(env, "java/lang/ArrayIndexOutOfBoundsException",
-            "Array index out of bounds");
+        // ArrayIndexOutOfBoundsException is pending
         return false;
     }
-    jlong *a = (jlong*)env->GetPrimitiveArrayCritical(ja, NULL);
-    if (a == NULL)
-    {
-        return false;
-    }
-    a[index] = value;
-    env->ReleasePrimitiveArrayCritical(ja, a, 0);
     return true;
 }
 
@@ -228,60 +212,44 @@ bool set(JNIEnv *env, jlongArray ja, int index, jlong value)
 
 
 /**
- * Set the element at the given index in the given array to
- * the given value. If the array is NULL, nothing is done.
- * Returns 'false' if an OutOfMemoryError occurred or an
- * ArrayIndexOutOfBoundsExcepton was caused.
- */
+* Set the element at the given index in the given array to
+* the given value. If the array is NULL, nothing is done.
+* Returns 'false' if an ArrayIndexOutOfBoundsExcepton was
+* caused.
+*/
 bool set(JNIEnv *env, jfloatArray ja, int index, jfloat value)
 {
     if (ja == NULL)
     {
         return true;
     }
-    jsize len = env->GetArrayLength(ja);
-    if (index < 0 || index >= len)
+    env->SetFloatArrayRegion(ja, index, 1, &value);
+    if (env->ExceptionCheck())
     {
-        ThrowByName(env, "java/lang/ArrayIndexOutOfBoundsException",
-            "Array index out of bounds");
+        // ArrayIndexOutOfBoundsException is pending
         return false;
     }
-    jfloat *a = (jfloat*)env->GetPrimitiveArrayCritical(ja, NULL);
-    if (a == NULL)
-    {
-        return false;
-    }
-    a[index] = value;
-    env->ReleasePrimitiveArrayCritical(ja, a, 0);
     return true;
 }
 
 /**
- * Set the element at the given index in the given array to
- * the given value. If the array is NULL, nothing is done.
- * Returns 'false' if an OutOfMemoryError occurred or an
- * ArrayIndexOutOfBoundsExcepton was caused.
- */
+* Set the element at the given index in the given array to
+* the given value. If the array is NULL, nothing is done.
+* Returns 'false' if an ArrayIndexOutOfBoundsExcepton was
+* caused.
+*/
 bool set(JNIEnv *env, jdoubleArray ja, int index, jdouble value)
 {
     if (ja == NULL)
     {
         return true;
     }
-    jsize len = env->GetArrayLength(ja);
-    if (index < 0 || index >= len)
+    env->SetDoubleArrayRegion(ja, index, 1, &value);
+    if (env->ExceptionCheck())
     {
-        ThrowByName(env, "java/lang/ArrayIndexOutOfBoundsException",
-            "Array index out of bounds");
+        // ArrayIndexOutOfBoundsException is pending
         return false;
     }
-    jdouble *a = (jdouble*)env->GetPrimitiveArrayCritical(ja, NULL);
-    if (a == NULL)
-    {
-        return false;
-    }
-    a[index] = value;
-    env->ReleasePrimitiveArrayCritical(ja, a, 0);
     return true;
 }
 
@@ -303,22 +271,23 @@ char* getArrayContents(JNIEnv *env, jbyteArray ja, int* length)
     {
         *length = (int)len;
     }
-    jbyte *a = (jbyte*)env->GetPrimitiveArrayCritical(ja, NULL);
+    jbyte *a = env->GetByteArrayElements(ja, NULL);
     if (a == NULL)
     {
+        // OutOfMemoryError is pending
         return NULL;
     }
     char *result = new char[len];
     if (result == NULL)
     {
-        env->ReleasePrimitiveArrayCritical(ja, a, JNI_ABORT);
+        ThrowByName(env, "java/lang/OutOfMemoryError",
+            "Out of memory during array creation");
         return NULL;
     }
     for (int i=0; i<len; i++)
     {
         result[i] = (char)a[i];
     }
-    env->ReleasePrimitiveArrayCritical(ja, a, JNI_ABORT);
     return result;
 }
 
@@ -340,22 +309,23 @@ int* getArrayContents(JNIEnv *env, jintArray ja, int* length)
     {
         *length = (int)len;
     }
-    jint *a = (jint*)env->GetPrimitiveArrayCritical(ja, NULL);
+    jint *a = env->GetIntArrayElements(ja, NULL);
     if (a == NULL)
     {
+        // OutOfMemoryError is pending
         return NULL;
     }
     int *result = new int[len];
     if (result == NULL)
     {
-        env->ReleasePrimitiveArrayCritical(ja, a, JNI_ABORT);
+        ThrowByName(env, "java/lang/OutOfMemoryError",
+            "Out of memory during array creation");
         return NULL;
     }
     for (int i=0; i<len; i++)
     {
         result[i] = (int)a[i];
     }
-    env->ReleasePrimitiveArrayCritical(ja, a, JNI_ABORT);
     return result;
 }
 
@@ -376,22 +346,23 @@ long long* getArrayContents(JNIEnv *env, jlongArray ja, int* length)
     {
         *length = (int)len;
     }
-    jlong *a = (jlong*)env->GetPrimitiveArrayCritical(ja, NULL);
+    jlong *a = env->GetLongArrayElements(ja, NULL);;
     if (a == NULL)
     {
+        // OutOfMemoryError is pending
         return NULL;
     }
     long long *result = new long long[len];
     if (result == NULL)
     {
-        env->ReleasePrimitiveArrayCritical(ja, a, JNI_ABORT);
+        ThrowByName(env, "java/lang/OutOfMemoryError",
+            "Out of memory during array creation");
         return NULL;
     }
     for (int i = 0; i<len; i++)
     {
         result[i] = (long long)a[i];
     }
-    env->ReleasePrimitiveArrayCritical(ja, a, JNI_ABORT);
     return result;
 }
 
@@ -525,11 +496,66 @@ void deleteStringArray(char** &array, int length)
 
 bool initNative(JNIEnv *env, jintArray javaObject, int* &nativeObject, bool fill)
 {
-    return initNativeGeneric<jintArray, jint, int>(env, javaObject, nativeObject, fill);
+    if (javaObject == NULL)
+    {
+        nativeObject = NULL;
+        return true;
+    }
+    jsize length = env->GetArrayLength(javaObject);
+    nativeObject = new int[size_t(length)];
+    if (nativeObject == NULL)
+    {
+        ThrowByName(env, "java/lang/OutOfMemoryError",
+            "Out of memory during array creation");
+        return false;
+    }
+    if (fill)
+    {
+        jint* primitiveArray = env->GetIntArrayElements(javaObject, NULL);
+        if (primitiveArray == NULL)
+        {
+            // OutOfMemoryError is pending
+            delete[] nativeObject;
+            nativeObject = NULL;
+            return false;
+        }
+        for (jint i = 0; i < length; i++)
+        {
+            nativeObject[i] = (int)primitiveArray[i];
+        }
+        env->ReleaseIntArrayElements(javaObject, primitiveArray, JNI_ABORT);
+    }
+    return true;
 }
+
 bool releaseNative(JNIEnv *env, int* &nativeObject, jintArray javaObject, bool writeBack)
 {
-    return releaseNativeGeneric<jint, jintArray, int>(env, nativeObject, javaObject, writeBack);
+    if (javaObject == NULL)
+    {
+        delete[] nativeObject;
+        nativeObject = NULL;
+        return true;
+    }
+    if (writeBack)
+    {
+        jsize length = env->GetArrayLength(javaObject);
+        jint* primitiveArray = env->GetIntArrayElements(javaObject, NULL);
+        if (primitiveArray == NULL)
+        {
+            // OutOfMemoryError is pending
+            delete[] nativeObject;
+            nativeObject = NULL;
+            return false;
+        }
+        for (jint i = 0; i < length; i++)
+        {
+            primitiveArray[i] = (jint)nativeObject[i];
+        }
+        env->ReleaseIntArrayElements(javaObject, primitiveArray, 0);
+    }
+    delete[] nativeObject;
+    nativeObject = NULL;
+    return true;
 }
 
 
