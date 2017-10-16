@@ -49,6 +49,10 @@ bool isPointerBackedByNativeMemory(JNIEnv *env, jobject object);
 
 int initPointerUtils(JNIEnv *env);
 
+void getArrayElementsPointer(JNIEnv* env, void* &startPointer, jarray array, jboolean* isCopy);
+void releaseArrayElementsPointer(JNIEnv* env, void* &startPointer, jarray array);
+
+
 extern jmethodID Buffer_isDirect; // ()Z
 extern jmethodID Buffer_hasArray; // ()Z
 extern jmethodID Buffer_array; // ()Ljava/lang/Object;
@@ -64,7 +68,6 @@ extern jmethodID Object_getClass; // ()Ljava/lang/Class;
 
 extern jmethodID Class_getComponentType; // ()Ljava/lang/Class;
 extern jmethodID Class_newInstance; // ()Ljava/lang/Object;
-
 
 /**
  * Virtual base class for all possible representations of pointers.
@@ -608,6 +611,9 @@ class DirectBufferPointerData : public PointerData
 };
 
 
+
+
+
 /**
  * A PointerData that points to a Java Array
  */
@@ -682,9 +688,9 @@ class ArrayBufferPointerData : public PointerData
         {
             if (startPointer == NULL)
             {
-                Logger::log(LOG_DEBUGTRACE, "Initializing ArrayBufferPointerData critical\n");
+                Logger::log(LOG_DEBUGTRACE, "Initializing ArrayBufferPointerData array elements\n");
                 isCopy = JNI_FALSE;
-                startPointer = env->GetPrimitiveArrayCritical(array, &isCopy);
+                getArrayElementsPointer(env, startPointer, array, &isCopy);
                 if (startPointer == NULL)
                 {
                     return NULL;
@@ -698,15 +704,8 @@ class ArrayBufferPointerData : public PointerData
         {
             if (startPointer != NULL)
             {
-                Logger::log(LOG_DEBUGTRACE, "Releasing    ArrayBufferPointerData critical\n");
-                if (!isCopy)
-                {
-                    env->ReleasePrimitiveArrayCritical(array, startPointer, JNI_ABORT);
-                }
-                else
-                {
-                    env->ReleasePrimitiveArrayCritical(array, startPointer, mode);
-                }
+                Logger::log(LOG_DEBUGTRACE, "Releasing    ArrayBufferPointerData array elements\n");
+                releaseArrayElementsPointer(env, startPointer, array);
                 startPointer = NULL;
             }
         }

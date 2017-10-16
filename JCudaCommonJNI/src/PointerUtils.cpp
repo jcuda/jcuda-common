@@ -46,7 +46,13 @@ jfieldID Pointer_buffer; // Ljava.nio.Buffer;
 jfieldID Pointer_pointers; // [jcuda.NativePointerObject;
 jfieldID Pointer_byteOffset; // long
 
-
+jclass arrayClass_byte;
+jclass arrayClass_short;
+jclass arrayClass_char;
+jclass arrayClass_int;
+jclass arrayClass_long;
+jclass arrayClass_float;
+jclass arrayClass_double;
 
 
 /**
@@ -86,6 +92,16 @@ int initPointerUtils(JNIEnv *env)
     if (!init(env, cls, Pointer_buffer,        "buffer",        "Ljava/nio/Buffer;"            )) return JNI_ERR;
     if (!init(env, cls, Pointer_pointers,      "pointers",      "[Ljcuda/NativePointerObject;" )) return JNI_ERR;
     if (!init(env, cls, Pointer_byteOffset,    "byteOffset",    "J"                            )) return JNI_ERR;
+
+    // Obtain the class IDs of array types
+    if (!initGlobal(env, arrayClass_byte,   "[B")) return JNI_ERR;
+    if (!initGlobal(env, arrayClass_short,  "[S")) return JNI_ERR;
+    if (!initGlobal(env, arrayClass_char,   "[C")) return JNI_ERR;
+    if (!initGlobal(env, arrayClass_int,    "[I")) return JNI_ERR;
+    if (!initGlobal(env, arrayClass_long,   "[J")) return JNI_ERR;
+    if (!initGlobal(env, arrayClass_float,  "[F")) return JNI_ERR;
+    if (!initGlobal(env, arrayClass_double, "[D")) return JNI_ERR;
+
 
     return JNI_VERSION_1_4;
 }
@@ -360,5 +376,64 @@ void* getPointer(JNIEnv *env, jobject pointerObject)
     jlong byteOffset = env->GetLongField(pointerObject, Pointer_byteOffset);
     jlong pointer = startPointer+byteOffset;
     return (void*)pointer;
+}
+
+
+void getArrayElementsPointer(JNIEnv* env, void* &startPointer, jarray array, jboolean* isCopy)
+{
+    if (env->IsInstanceOf(array, arrayClass_byte)) {
+        startPointer = env->GetByteArrayElements((jbyteArray)array, isCopy);
+    }
+    else if (env->IsInstanceOf(array, arrayClass_short)) {
+        startPointer = env->GetShortArrayElements((jshortArray)array, isCopy);
+    }
+    else if (env->IsInstanceOf(array, arrayClass_char)) {
+        startPointer = env->GetCharArrayElements((jcharArray)array, isCopy);
+    }
+    else if (env->IsInstanceOf(array, arrayClass_int)) {
+        startPointer = env->GetIntArrayElements((jintArray)array, isCopy);
+    }
+    else if (env->IsInstanceOf(array, arrayClass_long)) {
+        startPointer = env->GetLongArrayElements((jlongArray)array, isCopy);
+    }
+    else if (env->IsInstanceOf(array, arrayClass_float)) {
+        startPointer = env->GetFloatArrayElements((jfloatArray)array, isCopy);
+    }
+    else if (env->IsInstanceOf(array, arrayClass_double)) {
+        startPointer = env->GetDoubleArrayElements((jdoubleArray)array, isCopy);
+    }
+    else  {
+        // Should never happen
+        Logger::log(LogLevel::LOG_ERROR, "Invalid array type");
+    }
+}
+
+void releaseArrayElementsPointer(JNIEnv* env, void* &startPointer, jarray array)
+{
+    if (env->IsInstanceOf(array, arrayClass_byte)) {
+        env->ReleaseByteArrayElements((jbyteArray)array, (jbyte*)startPointer, 0);
+    }
+    else if (env->IsInstanceOf(array, arrayClass_short)) {
+        env->ReleaseShortArrayElements((jshortArray)array, (jshort*)startPointer, 0);
+    }
+    else if (env->IsInstanceOf(array, arrayClass_char)) {
+        env->ReleaseCharArrayElements((jcharArray)array, (jchar*)startPointer, 0);
+    }
+    else if (env->IsInstanceOf(array, arrayClass_int)) {
+        env->ReleaseIntArrayElements((jintArray)array, (jint*)startPointer, 0);
+    }
+    else if (env->IsInstanceOf(array, arrayClass_long)) {
+        env->ReleaseLongArrayElements((jlongArray)array, (jlong*)startPointer, 0);
+    }
+    else if (env->IsInstanceOf(array, arrayClass_float)) {
+        env->ReleaseFloatArrayElements((jfloatArray)array, (jfloat*)startPointer, 0);
+    }
+    else if (env->IsInstanceOf(array, arrayClass_double)) {
+        env->ReleaseDoubleArrayElements((jdoubleArray)array, (jdouble*)startPointer, 0);
+    }
+    else {
+        // Should never happen
+        Logger::log(LogLevel::LOG_ERROR, "Invalid array type");
+    }
 }
 
