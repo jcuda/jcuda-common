@@ -30,12 +30,14 @@
 
 #include <jni.h>
 #include <string>
+#include <string.h>
 
 #ifdef _WIN32
     // Disable "unreferenced formal parameter" warnings
     #pragma warning (disable : 4100)
 #endif
 
+void ThrowByName(JNIEnv *env, const char *name, const char *msg);
 
 bool init(JNIEnv *env, jclass& cls, const char *name);
 bool initGlobal(JNIEnv *env, jclass &globalCls, const char *className);
@@ -218,8 +220,6 @@ char **convertStringArray(JNIEnv *env, jobjectArray jsa, int *length=NULL);
 void deleteStringArray(char** &array, int length);
 
 //std::string getToString(JNIEnv *env, jobject object);
-
-void ThrowByName(JNIEnv *env, const char *name, const char *msg);
 
 int initJNIUtils(JNIEnv *env);
 
