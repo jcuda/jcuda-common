@@ -4,7 +4,7 @@
 
 set(JCUDA_CUDA_VERSION 9.0)
 
-set(JCUDA_VERSION 0.9.0b)
+set(JCUDA_VERSION 0.9.0c)
 
 ##############################################################################
 # Set the CMake module path so that FindCUDA.cmake can be found
