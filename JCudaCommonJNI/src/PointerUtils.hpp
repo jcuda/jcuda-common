@@ -145,6 +145,7 @@ class NativePointerObjectPointerData : public PointerData
     public:
         NativePointerObjectPointerData()
         {
+            nativePointerObject = NULL;
             nativePointer = 0;
         }
         ~NativePointerObjectPointerData()
@@ -178,8 +179,11 @@ class NativePointerObjectPointerData : public PointerData
         bool release(JNIEnv *env, jint mode=0)
         {
             Logger::log(LOG_DEBUGTRACE, "Releasing    NativePointerObjectPointerData %p\n", nativePointer);
-            env->SetLongField(nativePointerObject, NativePointerObject_nativePointer, nativePointer);
-            env->DeleteGlobalRef(nativePointerObject);
+            if (nativePointerObject != NULL)
+            {
+                env->SetLongField(nativePointerObject, NativePointerObject_nativePointer, nativePointer);
+                env->DeleteGlobalRef(nativePointerObject);
+            }
             return true;
         }
 
