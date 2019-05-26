@@ -532,8 +532,6 @@ bool releaseNative(JNIEnv *env, int* &nativeObject, jintArray javaObject, bool w
     return releaseNativeGeneric<jint, jintArray, int>(env, nativeObject, javaObject, writeBack);
 }
 
-
-
 /**
  * Returns the result of calling 'toString' on the given object.
  */
