@@ -532,6 +532,50 @@ bool releaseNative(JNIEnv *env, int* &nativeObject, jintArray javaObject, bool w
     return releaseNativeGeneric<jint, jintArray, int>(env, nativeObject, javaObject, writeBack);
 }
 
+
+bool initNative(JNIEnv *env, jobjectArray javaObject, int** &nativeObject, bool fill)
+{
+    if (javaObject == nullptr)
+    {
+        nativeObject = nullptr;
+        return true;
+    }
+    jsize length = env->GetArrayLength(javaObject);
+    delete[] nativeObject;
+    nativeObject = new int*[(size_t)length];
+    for (jsize index = 0; index < length; index++)
+    {
+        jobject javaElement = env->GetObjectArrayElement(javaObject, index);
+        jintArray javaArray = (jintArray)javaElement;
+        if (!initNative(env, javaArray, nativeObject[index], fill))
+        {
+            return false;
+        }
+    }
+    return true;
+}
+
+bool releaseNative(JNIEnv *env, int** &nativeObject, jobjectArray javaObject, bool writeBack)
+{
+    if (nativeObject == nullptr)
+    {
+        javaObject = nullptr;
+        return true;
+    }
+    jsize length = env->GetArrayLength(javaObject);
+    for (jsize index = 0; index < length; index++)
+    {
+        jobject javaElement = env->GetObjectArrayElement(javaObject, index);
+        jintArray javaArray = (jintArray)javaElement;
+        int *nativeArray = nativeObject[index];
+        if (!releaseNative(env, nativeArray, javaArray, writeBack))
+        {
+            return false;
+        }
+    }
+    return true;
+}
+
 /**
  * Returns the result of calling 'toString' on the given object.
  */

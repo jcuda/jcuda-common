@@ -178,5 +178,8 @@ bool releaseNativeGeneric(JNIEnv *env, NativeType* &nativeObject, JavaArrayType 
 bool initNative(JNIEnv *env, jintArray javaObject, int* &nativeObject, bool fill);
 bool releaseNative(JNIEnv *env, int* &nativeObject, jintArray javaObject, bool writeBack);
 
+bool initNative(JNIEnv *env, jobjectArray javaObject, int** &nativeObject, bool fill);
+bool releaseNative(JNIEnv *env, int** &nativeObject, jobjectArray javaObject, bool writeBack);
+
 
 #endif
