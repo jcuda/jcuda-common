@@ -535,9 +535,9 @@ bool releaseNative(JNIEnv *env, int* &nativeObject, jintArray javaObject, bool w
 
 bool initNative(JNIEnv *env, jobjectArray javaObject, int** &nativeObject, bool fill)
 {
-    if (javaObject == nullptr)
+    if (javaObject == NULL)
     {
-        nativeObject = nullptr;
+        nativeObject = NULL;
         return true;
     }
     jsize length = env->GetArrayLength(javaObject);
@@ -557,9 +557,9 @@ bool initNative(JNIEnv *env, jobjectArray javaObject, int** &nativeObject, bool 
 
 bool releaseNative(JNIEnv *env, int** &nativeObject, jobjectArray javaObject, bool writeBack)
 {
-    if (nativeObject == nullptr)
+    if (nativeObject == NULL)
     {
-        javaObject = nullptr;
+        javaObject = NULL;
         return true;
     }
     jsize length = env->GetArrayLength(javaObject);
