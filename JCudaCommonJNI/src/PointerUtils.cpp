@@ -46,7 +46,7 @@ jfieldID Pointer_buffer; // Ljava.nio.Buffer;
 jfieldID Pointer_pointers; // [jcuda.NativePointerObject;
 jfieldID Pointer_byteOffset; // long
 
-
+jmethodID Pointer_constructor;
 
 
 /**
@@ -86,6 +86,8 @@ int initPointerUtils(JNIEnv *env)
     if (!init(env, cls, Pointer_buffer,        "buffer",        "Ljava/nio/Buffer;"            )) return JNI_ERR;
     if (!init(env, cls, Pointer_pointers,      "pointers",      "[Ljcuda/NativePointerObject;" )) return JNI_ERR;
     if (!init(env, cls, Pointer_byteOffset,    "byteOffset",    "J"                            )) return JNI_ERR;
+
+    if (!init(env, cls, Pointer_constructor, "<init>", "()V")) return JNI_ERR;
 
     return JNI_VERSION_1_4;
 }

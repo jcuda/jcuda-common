@@ -60,6 +60,8 @@ extern jfieldID Pointer_buffer; // Ljava.nio.Buffer;
 extern jfieldID Pointer_pointers; // [jcuda.Pointer;
 extern jfieldID Pointer_byteOffset; // long
 
+extern jmethodID Pointer_constructor;
+
 extern jmethodID Object_getClass; // ()Ljava/lang/Class;
 
 extern jmethodID Class_getComponentType; // ()Ljava/lang/Class;
@@ -226,6 +228,7 @@ class NativePointerData : public PointerData
     public:
         NativePointerData()
         {
+            pointer = NULL;
             nativePointer = 0;
             byteOffset = 0;
         }
@@ -332,6 +335,7 @@ class PointersArrayPointerData : public PointerData
 
         PointersArrayPointerData()
         {
+            nativePointerObject = NULL;
             arrayPointerDatas = NULL;
             startPointer = NULL;
             byteOffset = 0;
