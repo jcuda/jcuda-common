@@ -521,6 +521,14 @@ void deleteStringArray(char** &array, int length)
 }
 
 
+bool initNative(JNIEnv* env, jintArray javaObject, unsigned int*& nativeObject, bool fill)
+{
+    return initNativeGeneric<jintArray, jint, unsigned int>(env, javaObject, nativeObject, fill);
+}
+bool releaseNative(JNIEnv* env, unsigned int*& nativeObject, jintArray javaObject, bool writeBack)
+{
+    return releaseNativeGeneric<jint, jintArray, unsigned int>(env, nativeObject, javaObject, writeBack);
+}
 
 
 bool initNative(JNIEnv *env, jintArray javaObject, int* &nativeObject, bool fill)
@@ -531,6 +539,16 @@ bool releaseNative(JNIEnv *env, int* &nativeObject, jintArray javaObject, bool w
 {
     return releaseNativeGeneric<jint, jintArray, int>(env, nativeObject, javaObject, writeBack);
 }
+
+bool initNative(JNIEnv* env, jbyteArray javaObject, char*& nativeObject, bool fill)
+{
+    return initNativeGeneric<jbyteArray, jbyte, char>(env, javaObject, nativeObject, fill);
+}
+bool releaseNative(JNIEnv* env, char*& nativeObject, jbyteArray javaObject, bool writeBack)
+{
+    return releaseNativeGeneric<jbyte, jbyteArray, char>(env, nativeObject, javaObject, writeBack);
+}
+
 
 
 bool initNative(JNIEnv *env, jobjectArray javaObject, int** &nativeObject, bool fill)
@@ -575,6 +593,26 @@ bool releaseNative(JNIEnv *env, int** &nativeObject, jobjectArray javaObject, bo
     }
     return true;
 }
+
+
+bool initNative(JNIEnv* env, jobjectArray javaObject, char**& nativeObject, bool fill)
+{
+    nativeObject = convertStringArray(env, javaObject);
+    return nativeObject != NULL;
+}
+
+bool releaseNative(JNIEnv* env, char**& nativeObject, jobjectArray javaObject, bool writeBack)
+{
+    if (nativeObject == NULL)
+    {
+        javaObject = NULL;
+        return true;
+    }
+    jsize length = env->GetArrayLength(javaObject);
+    deleteStringArray(nativeObject, length);
+    return true;
+}
+
 
 /**
  * Returns the result of calling 'toString' on the given object.

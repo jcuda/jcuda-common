@@ -2,9 +2,9 @@
 # Common CMake settings for all JCuda projects
 #
 
-set(JCUDA_CUDA_VERSION 11.0)
+set(JCUDA_CUDA_VERSION 11.1)
 
-set(JCUDA_VERSION 11.0.0)
+set(JCUDA_VERSION 11.1.0)
 
 ##############################################################################
 # Set the CMake module path so that FindCUDA.cmake can be found

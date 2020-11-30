@@ -319,6 +319,9 @@
 #   CUDA_nvgraph_LIBRARY  -- CUDA graph library
 #                            Only available for CUDA version 8.0+.
 
+#   CUDA_nvptxcompiler_static_LIBRARY -- CUDA nvptxcompiler
+#                            Only available for CUDA version 11.1+.
+
 
 #   James Bigler, NVIDIA Corp (nvidia.com - jbigler)
 #   Abe Stephens, SCI Institute -- http://www.sci.utah.edu/~abe/FindCuda.html
@@ -559,7 +562,8 @@ macro(cuda_unset_include_and_libraries)
   unset(CUDA_nvcuvenc_LIBRARY CACHE)
   unset(CUDA_nvcuvid_LIBRARY CACHE)
   unset(CUDA_nvgraph_LIBRARY CACHE)
-
+  unset(CUDA_nvptxcompiler_static_LIBRARY CACHE)
+  
   unset(CUDA_USE_STATIC_CUDA_RUNTIME CACHE)
 endmacro()
 
@@ -870,6 +874,11 @@ endif()
 if(NOT CUDA_VERSION VERSION_LESS "8.0")
   # nvgraph showed up in version 8.0
   find_cuda_helper_libs(nvgraph)
+endif()
+
+if(NOT CUDA_VERSION VERSION_LESS "11.1")
+  # nvptxcompiler showed up in version 11.1
+  find_cuda_helper_libs(nvptxcompiler_static)
 endif()
 
 if (CUDA_BUILD_EMULATION)
@@ -1833,6 +1842,16 @@ macro(CUDA_ADD_NVGRAPH_TO_TARGET target)
 endmacro()
 endif()
 
+###############################################################################
+###############################################################################
+# CUDA ADD NVPTXCOMPILER TO TARGET
+###############################################################################
+###############################################################################
+if(CUDA_VERSION VERSION_GREATER "11.0")
+macro(CUDA_ADD_NVPTXCOMPILER_STATIC_TO_TARGET target)
+  target_link_libraries(${target} ${CUDA_nvptxcompiler_static_LIBRARY})
+endmacro()
+endif()
 
 ###############################################################################
 ###############################################################################

@@ -175,11 +175,19 @@ bool releaseNativeGeneric(JNIEnv *env, NativeType* &nativeObject, JavaArrayType 
     return true;
 }
 
-bool initNative(JNIEnv *env, jintArray javaObject, int* &nativeObject, bool fill);
-bool releaseNative(JNIEnv *env, int* &nativeObject, jintArray javaObject, bool writeBack);
+bool initNative(JNIEnv* env, jintArray javaObject, int*& nativeObject, bool fill);
+bool releaseNative(JNIEnv* env, int*& nativeObject, jintArray javaObject, bool writeBack);
+
+bool initNative(JNIEnv* env, jintArray javaObject, unsigned int*& nativeObject, bool fill);
+bool releaseNative(JNIEnv* env, unsigned int*& nativeObject, jintArray javaObject, bool writeBack);
 
 bool initNative(JNIEnv *env, jobjectArray javaObject, int** &nativeObject, bool fill);
 bool releaseNative(JNIEnv *env, int** &nativeObject, jobjectArray javaObject, bool writeBack);
 
+bool initNative(JNIEnv* env, jbyteArray javaObject, char*& nativeObject, bool fill);
+bool releaseNative(JNIEnv* env, char*& nativeObject, jbyteArray javaObject, bool writeBack);
+
+bool initNative(JNIEnv* env, jobjectArray javaObject, char**& nativeObject, bool fill);
+bool releaseNative(JNIEnv* env, char**& nativeObject, jobjectArray javaObject, bool writeBack);
 
 #endif
