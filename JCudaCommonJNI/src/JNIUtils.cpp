@@ -521,6 +521,15 @@ void deleteStringArray(char** &array, int length)
 }
 
 
+bool initNative(JNIEnv *env, jintArray javaObject, int* &nativeObject, bool fill)
+{
+    return initNativeGeneric<jintArray, jint, int>(env, javaObject, nativeObject, fill);
+}
+bool releaseNative(JNIEnv *env, int* &nativeObject, jintArray javaObject, bool writeBack)
+{
+    return releaseNativeGeneric<jint, jintArray, int>(env, nativeObject, javaObject, writeBack);
+}
+
 bool initNative(JNIEnv* env, jintArray javaObject, unsigned int*& nativeObject, bool fill)
 {
     return initNativeGeneric<jintArray, jint, unsigned int>(env, javaObject, nativeObject, fill);
@@ -530,15 +539,33 @@ bool releaseNative(JNIEnv* env, unsigned int*& nativeObject, jintArray javaObjec
     return releaseNativeGeneric<jint, jintArray, unsigned int>(env, nativeObject, javaObject, writeBack);
 }
 
+bool initNative(JNIEnv *env, jlongArray javaObject, long* &nativeObject, bool fill)
+{
+    return initNativeGeneric<jlongArray, jlong, long>(env, javaObject, nativeObject, fill);
+}
+bool releaseNative(JNIEnv *env, long* &nativeObject, jlongArray javaObject, bool writeBack)
+{
+    return releaseNativeGeneric<jlong, jlongArray, long>(env, nativeObject, javaObject, writeBack);
+}
 
-bool initNative(JNIEnv *env, jintArray javaObject, int* &nativeObject, bool fill)
+bool initNative(JNIEnv* env, jlongArray javaObject, unsigned long*& nativeObject, bool fill)
 {
-    return initNativeGeneric<jintArray, jint, int>(env, javaObject, nativeObject, fill);
+    return initNativeGeneric<jlongArray, jlong, unsigned long>(env, javaObject, nativeObject, fill);
 }
-bool releaseNative(JNIEnv *env, int* &nativeObject, jintArray javaObject, bool writeBack)
+bool releaseNative(JNIEnv* env, unsigned long*& nativeObject, jlongArray javaObject, bool writeBack)
 {
-    return releaseNativeGeneric<jint, jintArray, int>(env, nativeObject, javaObject, writeBack);
+    return releaseNativeGeneric<jlong, jlongArray, unsigned long>(env, nativeObject, javaObject, writeBack);
 }
+
+bool initNative(JNIEnv* env, jlongArray javaObject, size_t*& nativeObject, bool fill)
+{
+    return initNativeGeneric<jlongArray, jlong, size_t>(env, javaObject, nativeObject, fill);
+}
+bool releaseNative(JNIEnv* env, size_t*& nativeObject, jlongArray javaObject, bool writeBack)
+{
+    return releaseNativeGeneric<jlong, jlongArray, size_t>(env, nativeObject, javaObject, writeBack);
+}
+
 
 bool initNative(JNIEnv* env, jbyteArray javaObject, char*& nativeObject, bool fill)
 {
