@@ -184,9 +184,6 @@ bool releaseNative(JNIEnv* env, unsigned int*& nativeObject, jintArray javaObjec
 bool initNative(JNIEnv* env, jlongArray javaObject, long*& nativeObject, bool fill);
 bool releaseNative(JNIEnv* env, long*& nativeObject, jlongArray javaObject, bool writeBack);
 
-bool initNative(JNIEnv* env, jlongArray javaObject, unsigned long*& nativeObject, bool fill);
-bool releaseNative(JNIEnv* env, unsigned long*& nativeObject, jlongArray javaObject, bool writeBack);
-
 bool initNative(JNIEnv* env, jlongArray javaObject, size_t*& nativeObject, bool fill);
 bool releaseNative(JNIEnv* env, size_t*& nativeObject, jlongArray javaObject, bool writeBack);
 

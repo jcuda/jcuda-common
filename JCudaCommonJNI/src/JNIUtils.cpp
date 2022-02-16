@@ -548,15 +548,6 @@ bool releaseNative(JNIEnv *env, long* &nativeObject, jlongArray javaObject, bool
     return releaseNativeGeneric<jlong, jlongArray, long>(env, nativeObject, javaObject, writeBack);
 }
 
-bool initNative(JNIEnv* env, jlongArray javaObject, unsigned long*& nativeObject, bool fill)
-{
-    return initNativeGeneric<jlongArray, jlong, unsigned long>(env, javaObject, nativeObject, fill);
-}
-bool releaseNative(JNIEnv* env, unsigned long*& nativeObject, jlongArray javaObject, bool writeBack)
-{
-    return releaseNativeGeneric<jlong, jlongArray, unsigned long>(env, nativeObject, javaObject, writeBack);
-}
-
 bool initNative(JNIEnv* env, jlongArray javaObject, size_t*& nativeObject, bool fill)
 {
     return initNativeGeneric<jlongArray, jlong, size_t>(env, javaObject, nativeObject, fill);
