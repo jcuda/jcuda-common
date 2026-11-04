@@ -707,14 +707,9 @@ class ArrayBufferPointerData : public PointerData
             if (startPointer != NULL)
             {
                 Logger::log(LOG_DEBUGTRACE, "Releasing    ArrayBufferPointerData critical\n");
-                if (!isCopy)
-                {
-                    env->ReleasePrimitiveArrayCritical(array, startPointer, JNI_ABORT);
-                }
-                else
-                {
-                    env->ReleasePrimitiveArrayCritical(array, startPointer, mode);
-                }
+                // Preserve the caller's copy-back mode, including when the
+                // VM uses diagnostic buffers for an otherwise pinned array.
+                env->ReleasePrimitiveArrayCritical(array, startPointer, mode);
                 startPointer = NULL;
             }
         }
